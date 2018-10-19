@@ -22,9 +22,9 @@ router.post("/", async (req,res,next)=>{
   }
 })
 
-router.put("/:name", async (req,res,next)=>{
+router.put("/:title", async (req,res,next)=>{
   try{
-      const updatedBook = await Book.findOneAndUpdate({name:req.params.name},req.body,{new:true})
+      const updatedBook = await Book.findOneAndUpdate({title:req.params.title},req.body,{new:true})
       res.status(200).json(updatedBook)
   }catch(error){
       next(error)
@@ -33,7 +33,7 @@ router.put("/:name", async (req,res,next)=>{
 
 router.delete("/:name", async (req,res,next)=>{
   try{
-      const deletedBook = Book.findOneAndDelete({name:req.params.name}).then(deletedBook=>{
+      const deletedBook = Book.findOneAndDelete({title:req.params.name}).then(deletedBook=>{
           (deletedBook===null) ? res.status(404).json("book not found") :
           res.status(200).json(`you have deleted book ${req.params.name}`)
       })
