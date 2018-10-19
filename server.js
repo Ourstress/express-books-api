@@ -1,5 +1,17 @@
 const app = require("./app");
+const mongoose = require('mongoose')
 
-const server = app.listen(process.env.PORT || 3000, () => {
-  console.log(`Listening on port ${server.address().port}...`);
-});
+mongoose.connect("mongodb://localhost/mongoBookStore", {useNewUrlParser:true})
+const db = mongoose.connection
+
+db.on("error", error => {
+  console.error("An error occured", error)
+})
+
+db.once("open", () => {
+  console.log("database is connected!")
+})
+
+app.listen(4000, ()=> {
+  console.log("Listening on port 4000...")
+})

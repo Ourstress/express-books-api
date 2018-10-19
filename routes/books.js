@@ -1,25 +1,54 @@
 const express = require("express");
 const router = express.Router();
+const Book = require('../models/bookModel')
 
 /* GET books listing. */
-router.get("/", (req, res, next) => {
-  res.json({ message: "respond with all books" });
-});
+router.get("/", async (req,res,next)=>{
+  try{
+      const searchResults = await Book.find().populate("author")
+      res.status(200).json(searchResults)
+  }catch(error){
+      next(error)
+  }
+})
 
-router.get("/:id", (req, res, next) => {
-  res.json({ message: `get book with id ${req.params.id}` });
-});
+router.post("/", async (req,res,next)=>{
+  try{
+      const newBook = new Book(req.body)
+      await newBook.save()
+      res.status(201).json(`new book added - ${newBook}`)
+  }catch(error){
+      next(error)
+  }
+})
 
-router.post("/", (req, res, next) => {
-  res.json({ message: `create new book using data from ${req.body}` });
-});
+router.put("/:title", async (req,res,next)=>{
+  try{
+      const updatedBook = await Book.findOneAndUpdate({title:req.params.title},req.body,{new:true})
+      res.status(200).json(updatedBook)
+  }catch(error){
+      next(error)
+  }
+})
 
-router.put("/:id", (req, res, next) => {
-  res.json({ message: `update book with id ${req.params.id}` });
-});
+router.delete("/:name", async (req,res,next)=>{
+  try{
+      const deletedBook = Book.findOneAndDelete({title:req.params.name}).then(deletedBook=>{
+          (deletedBook===null) ? res.status(404).json("book not found") :
+          res.status(200).json(`you have deleted book ${req.params.name}`)
+      })
+  }catch(error){
+      next(error)
+  }
+})
 
-router.delete("/:id", (req, res, next) => {
-  res.json({ message: `delete book with id ${req.params.id}` });
-});
-
+router.get("/:id", async (req,res,next)=>{
+  try{
+      const books = await Book.find({author:req.params.id})
+      res.status(200).json(books)
+   } catch(error){
+          next(error)
+      }
+  }
+)
 module.exports = router;
